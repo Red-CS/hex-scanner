@@ -57,8 +57,15 @@ public class HexScanner {
 
                 // If There is a hex
                 if (nextLine.indexOf("#") >= 0) {
-                    String hex = nextLine.substring(nextLine.indexOf("#") + 1,
-                        nextLine.indexOf("#") + 7);
+                    String hex = null;
+                    try {
+                        hex = nextLine.substring(nextLine.indexOf("#") + 1,
+                            nextLine.indexOf("#") + 7);
+                    }
+                    catch (StringIndexOutOfBoundsException e) {
+                        continue;
+                    }
+
                     if (isHexCode(hex)) {
 
                         // If it is a new hex code for that file
