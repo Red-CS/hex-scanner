@@ -60,7 +60,7 @@ public class HexScanner {
                     String hex = null;
                     try {
                         hex = nextLine.substring(nextLine.indexOf("#") + 1,
-                            nextLine.indexOf("#") + 7);
+                            nextLine.indexOf("#") + 7).toUpperCase();
                     }
                     catch (StringIndexOutOfBoundsException e) {
                         continue;
