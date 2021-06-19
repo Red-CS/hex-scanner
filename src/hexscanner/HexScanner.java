@@ -32,7 +32,7 @@ public class HexScanner {
 
         HashMap<String, ArrayList<Integer>> hexMap =
             new HashMap<String, ArrayList<Integer>>();
-        int numHexCodes = 0;
+        int lineNumber = 1;
         for (File f : files) {
             Scanner sc;
             try {
@@ -53,17 +53,24 @@ public class HexScanner {
 
                         // If it is a new hex code for that file
                         if (!hexMap.containsKey(hex)) {
-                            hexMap.put(hex, new ArrayList<Integer>(1));
-                            System.out.println("\t#" + hex);
-                            numHexCodes++;
+                            ArrayList<Integer> lineList =
+                                new ArrayList<Integer>();
+                            lineList.add(lineNumber);
+                            hexMap.put(hex, lineList);
+                        }
+
+                        // Else the key exists
+                        else {
+                            hexMap.get(hex).add(lineNumber);
                         }
 
                     }
                 }
+                lineNumber++;
             }
             sc.close();
-            System.out.println("Number of Hex Codes: " + numHexCodes + "\n");
-            numHexCodes = 0;
+            printHexData(hexMap);
+            lineNumber = 1;
             hexMap.clear();
         }
     }
@@ -78,6 +85,22 @@ public class HexScanner {
             }
         }
         return true;
+    }
+
+
+    /**
+     * @param map
+     */
+    private static void printHexData(HashMap<String, ArrayList<Integer>> map) {
+        for (String s : map.keySet()) {
+            System.out.print("#" + s + " : [");
+            ArrayList<Integer> lineNumbers = map.get(s);
+            for (int i = 0; i < lineNumbers.size() - 1; i++) {
+                System.out.print(lineNumbers.get(i) + ", ");
+            }
+            System.out.println(lineNumbers.get(lineNumbers.size() - 1) + "]");
+        }
+        System.out.println("Number of Hex Codes: " + map.size() + "\n");
     }
 
 
