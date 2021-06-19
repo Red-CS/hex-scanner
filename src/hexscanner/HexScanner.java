@@ -19,7 +19,9 @@ import javax.swing.filechooser.FileSystemView;
 public class HexScanner {
 
     /**
-     * @param args
+     * Main Method
+     * @param args File paths to read from. If none are specified, opens a file
+     *        chooser
      */
     public static void main(String[] args) {
         File[] files;
@@ -30,6 +32,7 @@ public class HexScanner {
             files = getFilesFromExplorer();
         }
 
+        // HashMap stores the hex code and the line numbers
         HashMap<String, ArrayList<Integer>> hexMap =
             new HashMap<String, ArrayList<Integer>>();
         int lineNumber = 1;
@@ -39,13 +42,20 @@ public class HexScanner {
                 sc = new Scanner(f);
             }
             catch (FileNotFoundException e) {
+                // Handle file not found
                 System.out.println("File " + f.toString() + " not found");
                 continue;
             }
+
+            // Print filepath
             System.out.println("File: " + f.toString());
             String nextLine;
+
+            // Read lines of file
             while (sc.hasNextLine()) {
                 nextLine = sc.nextLine();
+
+                // If There is a hex
                 if (nextLine.indexOf("#") >= 0) {
                     String hex = nextLine.substring(nextLine.indexOf("#") + 1,
                         nextLine.indexOf("#") + 7);
@@ -68,6 +78,8 @@ public class HexScanner {
                 }
                 lineNumber++;
             }
+
+            // Print data, and prepare for next file
             sc.close();
             printHexData(hexMap);
             lineNumber = 1;
@@ -76,11 +88,18 @@ public class HexScanner {
     }
 
 
+    /**
+     * Determines if a String is a hexCode using ANSCII values
+     * @param possibleHex the possible hexcode to check
+     * @return True if the String is a hexcode, false if not
+     */
     private static boolean isHexCode(String possibleHex) {
+        possibleHex = possibleHex.toLowerCase(); // Makes ANSCII check easier
         for (int i = 0; i < possibleHex.length(); i++) {
-            if ((possibleHex.charAt(i) <= 48 && possibleHex.charAt(i) >= 57)
-                || (possibleHex.charAt(i) >= 65 && possibleHex.charAt(
-                    i) >= 122)) {
+            // is a number 0 - 9 inclusive
+            if ((possibleHex.charAt(i) < 48) || (possibleHex.charAt(i) > 57
+                && possibleHex.charAt(i) < 97) || (possibleHex.charAt(
+                    i) > 102)) {
                 return false;
             }
         }
@@ -89,11 +108,12 @@ public class HexScanner {
 
 
     /**
-     * @param map
+     * A toString method for the hex data
+     * @param map Map that contains the data
      */
     private static void printHexData(HashMap<String, ArrayList<Integer>> map) {
         for (String s : map.keySet()) {
-            System.out.print("#" + s + " : [");
+            System.out.print("\t#" + s + " : [");
             ArrayList<Integer> lineNumbers = map.get(s);
             for (int i = 0; i < lineNumbers.size() - 1; i++) {
                 System.out.print(lineNumbers.get(i) + ", ");
@@ -119,8 +139,9 @@ public class HexScanner {
         JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView()
             .getHomeDirectory());
         jfc.setMultiSelectionEnabled(true);
-        jfc.setDialogTitle("Select which files to scan");
+        jfc.setDialogTitle("Select Which Files to can");
 
+        // When the user clicks "Open"
         if (jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             files = jfc.getSelectedFiles();
         }
@@ -129,13 +150,15 @@ public class HexScanner {
             System.out.println("No folder chosen, system will exit");
             System.exit(0);
         }
-        for (File f : files) {
-            System.out.println(f.toString());
-        }
         return files;
     }
 
 
+    /**
+     * Gets the files specified from the Command Line
+     * @param args Command Line arguments
+     * @return the files from the command line
+     */
     public static File[] getFilesFromCommandLine(String[] args) {
         File[] files = new File[args.length];
         int index = 0;
